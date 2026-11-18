@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz Final — Okeson caps. 11, 12 y 13</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --rosa:#F2A3C0;        /* fondo */
+  --magenta:#D6246E;     /* errores */
+  --ama:#F8DC4F;         /* aciertos y acentos */
+  --verde:#1FA85C;       /* avanzar */
+  --negro:#111111;
+  --blanco:#FFFFFF;
+  --gris:#8A8A8A;
+  --sombra:6px 6px 0 var(--negro);
+  --sombra-sm:4px 4px 0 var(--negro);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--rosa)}
+body{
+  font-family:Poppins,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color:var(--negro); line-height:1.5; -webkit-font-smoothing:antialiased;
+  padding:22px 16px 80px;
+}
+.wrap{max-width:860px;margin:0 auto}
+
+/* ---------- cabecera durante el quiz ---------- */
+#barra{display:none;margin-bottom:18px}
+.hb{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.logo{font-weight:800;font-size:18px;letter-spacing:-.01em;text-decoration:underline;
+  text-underline-offset:3px;text-decoration-thickness:3px;cursor:pointer;background:none;border:0;
+  font-family:inherit;color:inherit;padding:0}
+.caja{border:3px solid var(--negro);box-shadow:var(--sombra-sm);background:var(--blanco);
+  font-weight:700;font-size:14px;padding:6px 13px}
+.caja.ok{background:var(--ama)}
+.cnt{display:flex;gap:9px;margin-left:auto}
+.prog{height:16px;border:3px solid var(--negro);background:var(--blanco);overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--ama);transition:width .3s}
+.pnum{font-weight:700;font-size:14px;margin-top:6px}
+.regla{height:4px;background:var(--negro);margin-top:10px}
+
+/* ---------- portada ---------- */
+.titulo{text-align:center;margin:18px 0 10px}
+.titulo h1{font-size:clamp(46px,12vw,92px);line-height:.88;font-weight:800;color:var(--ama);
+  letter-spacing:-.02em;text-transform:uppercase;text-shadow:5px 5px 0 var(--negro)}
+.titulo p{max-width:430px;margin:18px auto 0;font-weight:500;font-size:16px}
+.ficha{background:var(--blanco);border:3px solid var(--negro);box-shadow:var(--sombra);
+  padding:20px 22px;margin:26px auto 0;max-width:560px}
+.fila{display:flex;gap:16px;padding:7px 0;align-items:flex-start}
+.fila dt{font-weight:700;flex:0 0 108px;font-size:15px}
+.fila dd{font-size:15px}
+.centro{display:flex;justify-content:center;margin-top:26px}
+.sueltos{max-width:560px;margin:34px auto 0}
+.sueltos h2{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;
+  text-align:center;margin-bottom:12px}
+.rejilla{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
+.bloque{background:var(--blanco);border:3px solid var(--negro);box-shadow:var(--sombra-sm);
+  padding:13px 11px;cursor:pointer;font:inherit;color:inherit;text-align:center;transition:.1s}
+.bloque:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--negro)}
+.bloque b{display:block;font-size:14px;font-weight:700;margin-bottom:2px}
+.bloque span{font-size:12px;font-weight:500}
+.bloque .ult{display:block;margin-top:5px;font-size:11px;font-weight:700;background:var(--ama);
+  border:2px solid var(--negro);padding:1px 0}
+.retomar{background:var(--ama);border:3px solid var(--negro);box-shadow:var(--sombra);
+  padding:17px 20px;max-width:560px;margin:0 auto 24px}
+.retomar b{display:block;font-size:16px;font-weight:700}
+.retomar p{font-size:14px;font-weight:500;margin:3px 0 13px}
+.pie{text-align:center;margin-top:28px}
+
+/* ---------- tarjeta ---------- */
+.card{background:var(--blanco);border:3px solid var(--negro);box-shadow:var(--sombra);padding:22px}
+.sup{display:flex;align-items:center;gap:10px;margin-bottom:15px;flex-wrap:wrap}
+.niv{background:var(--ama);border:3px solid var(--negro);font-weight:700;font-size:13px;padding:2px 11px}
+.tipo{font-weight:500;font-size:14px}
+.cuenta{margin-left:auto;font-weight:700;font-size:15px}
+.tema{font-size:12px;font-weight:600;width:100%;margin-top:-6px}
+.ctx{border:3px solid var(--negro);background:var(--rosa);padding:13px 15px;margin-bottom:15px}
+.ctx b{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:2px}
+.ctx p{font-size:14px;font-weight:500}
+.ctx p+b{margin-top:10px}
+.preg{font-size:19px;font-weight:700;line-height:1.38;margin-bottom:18px}
+.preg.largo{font-size:16px;font-weight:600;line-height:1.52;text-align:justify}
+
+.ops{display:grid;gap:11px}
+.ops.vf{grid-template-columns:1fr 1fr}
+.op{background:var(--blanco);border:3px solid var(--negro);box-shadow:var(--sombra-sm);
+  padding:14px 16px;font:inherit;font-size:15.5px;font-weight:700;color:inherit;
+  cursor:pointer;text-align:left;display:flex;gap:11px;align-items:flex-start;transition:.1s}
+.ops.vf .op{justify-content:center;text-align:center;font-size:17px}
+.op:hover:not(:disabled){transform:translate(2px,2px);box-shadow:2px 2px 0 var(--negro)}
+.op .k{flex:0 0 22px;font-weight:800}
+.ops.vf .op .k{display:none}
+.op.sel{background:var(--ama)}
+.op:disabled{cursor:default;box-shadow:none;transform:none}
+.op.apag{color:var(--gris);border-color:var(--gris)}
+.op.bien{background:var(--ama);border-color:var(--negro);color:var(--negro);box-shadow:var(--sombra-sm)}
+.op.mal{background:var(--blanco);border-color:var(--magenta);color:var(--magenta)}
+
+.pista{border:3px dashed var(--negro);background:var(--rosa);padding:12px 15px;margin-top:15px;
+  font-size:14.5px;font-weight:500}
+.pista b{font-weight:700}
+
+.fb{border:3px solid var(--negro);padding:16px 18px;margin-top:16px}
+.fb.ok{background:var(--ama)}
+.fb.no{background:var(--blanco);border-color:var(--magenta)}
+.fb .t{font-size:19px;font-weight:700;margin-bottom:7px}
+.fb.no .t{color:var(--magenta)}
+.fb .sol{font-weight:700;font-size:15px;margin-bottom:6px}
+.fb p{font-size:14.5px;font-weight:500}
+.fb .pag{display:inline-block;margin-top:10px;font-size:12px;font-weight:700;
+  border:2px solid var(--negro);padding:1px 8px;background:var(--blanco)}
+
+/* ---------- botones ---------- */
+.btn{font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;color:var(--negro);
+  border:3px solid var(--negro);box-shadow:var(--sombra);background:var(--blanco);
+  padding:13px 30px;transition:.1s}
+.btn:hover:not(:disabled){transform:translate(3px,3px);box-shadow:3px 3px 0 var(--negro)}
+.btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:var(--sombra)}
+.btn-ama{background:var(--ama)}
+.btn-verde{background:var(--verde);color:var(--blanco)}
+.btn-ancho{width:100%;margin-top:16px;font-size:17px}
+.btn-sm{font-size:14px;padding:9px 18px;box-shadow:var(--sombra-sm)}
+.acc{display:flex;gap:11px;margin-top:17px;flex-wrap:wrap;align-items:center}
+.acc .der{margin-left:auto}
+
+/* ---------- resultados ---------- */
+.res h2{font-size:clamp(34px,9vw,58px);font-weight:800;text-transform:uppercase;color:var(--ama);
+  text-shadow:4px 4px 0 var(--negro);text-align:center;line-height:1;margin-bottom:18px}
+.marcador{background:var(--blanco);border:3px solid var(--negro);box-shadow:var(--sombra);
+  padding:24px;text-align:center;margin-bottom:20px}
+.marcador .pct{font-size:62px;font-weight:800;line-height:1}
+.marcador .ver{display:inline-block;margin-top:10px;background:var(--ama);border:3px solid var(--negro);
+  font-weight:700;padding:4px 16px;font-size:15px}
+.tres{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:24px}
+.kpi{background:var(--blanco);border:3px solid var(--negro);box-shadow:var(--sombra-sm);
+  padding:14px;text-align:center}
+.kpi.k1{background:var(--ama)}
+.kpi b{display:block;font-size:30px;font-weight:800;line-height:1.1}
+.kpi span{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+h3.rs{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin:24px 0 11px}
+.tr{background:var(--blanco);border:3px solid var(--negro);padding:12px 15px;margin-bottom:9px}
+.tr .l1{display:flex;align-items:center;gap:9px;margin-bottom:8px;flex-wrap:wrap}
+.tr .nm{font-weight:700;font-size:14.5px}
+.tr .sc{margin-left:auto;font-weight:700;font-size:14px}
+.tr .et{font-size:11px;font-weight:700;text-transform:uppercase;border:2px solid var(--negro);padding:1px 7px}
+.et.e1{background:var(--ama)} .et.e2{background:var(--blanco)} .et.e3{background:var(--magenta);color:#fff}
+.mini{height:11px;border:2px solid var(--negro);background:var(--blanco)}
+.mini i{display:block;height:100%}
+.fallo{background:var(--blanco);border:3px solid var(--magenta);padding:12px 14px;margin-bottom:9px;font-size:14px;font-weight:500}
+.fallo b{display:block;font-size:11.5px;font-weight:700;color:var(--magenta);text-transform:uppercase;
+  letter-spacing:.04em;margin-bottom:3px}
+.aviso{background:var(--blanco);border:3px solid var(--negro);padding:14px 16px;font-size:14.5px;font-weight:500}
+.aviso b{font-weight:700}
+
+@media(max-width:640px){
+  .ops.vf{grid-template-columns:1fr}
+  .tres{grid-template-columns:1fr}
+  .rejilla{grid-template-columns:1fr}
+  .fila{flex-direction:column;gap:2px}
+  .fila dt{flex:none}
+  .card{padding:18px}
+  .preg{font-size:17.5px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="barra">
+    <div class="hb">
+      <button class="logo" id="bSalir">QUIZ FINAL</button>
+      <div class="cnt">
+        <span class="caja ok" id="cOk">Aciertos 0</span>
+        <span class="caja" id="cNo">Errores 0</span>
+      </div>
+    </div>
+    <div class="prog"><i id="prog"></i></div>
+    <div class="pnum" id="pnum"></div>
+    <div class="regla"></div>
+  </div>
+  <div id="app"></div>
+</div>
+
+<script>
+/* ============================================================
+   BANCO — 70 preguntas tomadas de los PDF del temario
+   Okeson, Tratamiento de Oclusión y Afecciones Temporomandibulares, 7.ª ed.
+   niv: 1 fácil · 2 media · 3 difícil
+   ============================================================ */
+const T={FA:"C11 · Analgésicos y combinaciones",
+         FB:"C11 · Antiinflamatorios y corticoides",
+         FC:"C11 · Relajantes, ansiolíticos y anticonvulsivos",
+         FD:"C11 · Tópicos y normas de prescripción",
+         C11D:"C11 · Tratamiento definitivo",C11P:"C11 · Fisioterapia y ARF",
+         C12M:"C12 · Trastornos musculares",C12C:"C12 · Trastornos motores centrales",
+         C13D:"C13 · Trastornos de la ATM",CASO:"Casos clínicos"};
+
+const BANCO=[
+
+/* ---------------- VERDADERO O FALSO (30) ----------------
+   Párrafos largos al estilo del libro. En las falsas cambia UNA sola palabra. */
+
+/* ===== Analgésicos y combinaciones ===== */
+{t:"vf",niv:2,tema:T.FD,q:"Dado que muchos trastornos temporomandibulares presentan síntomas de carácter periódico o cíclico, existe la tendencia a prescribir fármacos que deben tomarse según las necesidades. Este tipo de tratamiento puede fomentar el abuso por parte del paciente y conducir a una dependencia física o psicológica, sobre todo con los analgésicos narcóticos y los ansiolíticos, que proporcionan un breve período de euforia que a veces se convierte en una recompensa inconsciente por haber sufrido dolor. Por eso se recomienda prescribir a intervalos regulares durante un período de tiempo especificado, por ejemplo 3 veces al día durante 10 días.",a:true,
+ pista:"Fíjate en los dos grupos de fármacos de los que se abusa y en el ejemplo de pauta que da el libro.",
+ fb:"Todo el párrafo es correcto. Al finalizar ese período se espera que el tratamiento definitivo alivie los síntomas y que la medicación deje de ser necesaria.",pg:"pp. 268-269"},
+
+{t:"vf",niv:2,tema:T.FA,q:"Los analgésicos no opiáceos constituyen un grupo heterogéneo de compuestos que comparten determinados efectos terapéuticos y efectos secundarios, y son eficaces contra el dolor leve o moderado producido por los trastornos temporomandibulares. Uno de los primeros fármacos de elección para el alivio del dolor moderado es el paracetamol, que suele ser bien tolerado y con efectos secundarios mínimos. El prototipo de estos fármacos es el ácido acetilsalicílico, un estimulador de la síntesis de prostaglandinas, y otro salicilato es el diflunisal.",a:false,
+ pista:"Repasa qué le hace exactamente la aspirina a las prostaglandinas.",
+ fb:"Cambió una palabra: el ácido acetilsalicílico es un INHIBIDOR de la síntesis de prostaglandinas, no un estimulador. Lo demás del párrafo es correcto.",pg:"p. 269"},
+
+{t:"vf",niv:3,tema:T.FA,q:"Otro tipo de analgésicos son los derivados del ácido propiónico, cuyo ejemplo es el ibuprofeno, que puede proporcionar un alivio excelente del dolor musculoesquelético; otros son el naproxeno, el ketoprofeno, la oxaprozina, el meloxicam, el etodolaco y el diclofenaco. Un efecto adverso frecuente es la irritación gastrointestinal, por lo que se recomienda tomarlos con alimentos. En los pacientes que notan gran alivio del dolor pero molestias estomacales puede añadirse un inhibidor de la bomba de protones, como el omeprazol, que aumenta la producción de ácido por parte del estómago.",a:false,
+ pista:"Piensa para qué sirve un inhibidor de la bomba de protones si el problema es el ácido.",
+ fb:"Cambió una palabra: el omeprazol DISMINUYE la producción de ácido por parte del estómago. El resto de la lista de fármacos y la recomendación de tomarlos con alimentos son correctas.",pg:"p. 269"},
+
+{t:"vf",niv:3,tema:T.FA,q:"Existen varias combinaciones de analgésicos que pueden ayudar a los pacientes con trastornos temporomandibulares, basadas en el principio de que varios tipos de fármacos pueden trabajar juntos para proporcionar una mejor reducción del dolor. Un ejemplo habitual es la combinación, en un solo comprimido, de 400 mg de aspirina con 32 mg de cafeína. Otra combinación es la de 250 mg de aspirina, 250 mg de paracetamol y 65 mg de cafeína, o la de 37,5 mg de tramadol con 325 mg de paracetamol.",a:true,
+ pista:"Son tres combinaciones con cifras concretas; compáralas con la tabla 11-3.",
+ fb:"Las tres cifras son correctas. En la tabla, las dos primeras se pautan 1-2 comprimidos 3 veces al día con un máximo de 6 comprimidos al día, y la de tramadol 2 comprimidos cada 4-6 horas con un máximo de 8 al día.",pg:"p. 269 y tabla 11-3"},
+
+{t:"vf",niv:3,tema:T.FA,q:"En contadas ocasiones puede que haya que utilizar analgésicos más potentes, y en tales casos se puede combinar la codeína o la hidrocodona con un salicilato o con paracetamol. Los opiáceos actúan sobre receptores específicos de los sistemas nerviosos central y periférico, presentan cualidades depresoras sobre el sistema nervioso central y posibilidad de adicción, por lo que han de prescribirse para un uso a corto plazo en los casos de dolor agudo de moderado a intenso. Están indicados los fármacos muy adictivos, como la oxicodona, el sulfato de morfina y la metadona, para el dolor musculoesquelético.",a:false,
+ pista:"La última línea dice justo lo contrario de lo que el libro advierte sobre esos tres fármacos.",
+ fb:"Cambió una palabra: esos fármacos están CONTRAINDICADOS para el dolor musculoesquelético. La codeína y la hidrocodona sí pueden combinarse con un salicilato o con paracetamol.",pg:"p. 269"},
+
+{t:"vf",niv:1,tema:T.FA,q:"La eficacia de las medicaciones analgésicas puede variar mucho de un paciente a otro, porque factores como las proporciones de absorción, metabolismo y excreción varían entre pacientes y determinan la cantidad de alivio del dolor que se experimenta. Por tanto, si el clínico prueba un fármaco y el paciente no aprecia muchos resultados, debería sustituirse por otro. A menudo los pacientes son conscientes de qué fármacos les ayudan más, por lo que se les debería consultar antes de prescribir una medicación.",a:true,
+ pista:"No hay cifras aquí: es el razonamiento sobre por qué un mismo analgésico no funciona igual en todos.",
+ fb:"Correcto tal cual. Es la justificación de por qué el libro recomienda preguntar al paciente antes de prescribir.",pg:"p. 269"},
+
+/* ===== Antiinflamatorios y corticoides ===== */
+{t:"vf",niv:2,tema:T.FB,q:"En presencia de una lesión tisular se liberan determinados mediadores químicos en la zona lesionada, y uno de los más destacados es la prostaglandina, que excita los nociceptores locales provocando dolor. Los AINE inhiben la acción de la ciclooxigenasa, una enzima usada para sintetizar prostaglandinas a partir del ácido araquidónico. Los AINE pueden dividirse en dos grupos: los indoles, cuyo prototipo es la indometacina y que incluyen el sulindaco y la tolmetina sódica, y los derivados del ácido propiónico, de vida media más corta.",a:true,
+ pista:"Mediador, enzima, sustrato y los dos grupos de AINE: compruébalos uno por uno.",
+ fb:"Todo correcto. La mayoría de los AINE son también buenos analgésicos, por eso aparecen a la vez en la tabla de analgésicos y en la de antiinflamatorios.",pg:"p. 270"},
+
+{t:"vf",niv:2,tema:T.FB,q:"Existen dos vías diferentes por las que la ciclooxigenasa interviene en la síntesis de prostaglandinas: la COX-1 y la COX-2. La vía COX-1 interviene en el mantenimiento de la función homeostática y la integridad gástrica y renal, mientras que la vía COX-2 tiene mayores efectos en la respuesta inflamatoria. La mayoría de los AINE inhiben ambas vías, reduciendo la inflamación y disminuyendo también las secreciones gástricas que protegen las paredes del estómago, de modo que el resultado suele ser reducción del dolor pero también irritación estomacal.",a:true,
+ pista:"Una vía es la protectora y la otra la inflamatoria; fíjate además en cuántas vías bloquea un AINE corriente.",
+ fb:"Correcto. Precisamente por inhibir también la COX-1 aparece la irritación gástrica, y de ahí nacieron los inhibidores selectivos de la COX-2.",pg:"p. 270"},
+
+{t:"vf",niv:2,tema:T.FB,q:"Tomados de forma regular, los AINE pueden ser bastante útiles en el tratamiento de los trastornos articulares inflamatorios, así como de la mialgia crónica de mediación central. No obstante, con estos fármacos no suelen obtenerse buenos niveles en sangre inmediatamente, por lo que cuando se tomen por sus efectos antiinflamatorios han de tomarse durante un mínimo de 2 a 3 semanas. Hay que aconsejar al paciente que los tome con comida para disminuir las molestias gástricas, y si aparecen problemas estomacales puede añadirse un inhibidor de la bomba de protones.",a:true,
+ pista:"El dato que más se pregunta aquí es el plazo mínimo para el efecto antiinflamatorio.",
+ fb:"Correcto. Ese mínimo de 2 a 3 semanas es lo que distingue tomar un AINE como analgésico de tomarlo como antiinflamatorio.",pg:"p. 270"},
+
+{t:"vf",niv:3,tema:T.FB,q:"Los corticoides son antiinflamatorios muy potentes que, debido a sus efectos secundarios, no se suelen prescribir para uso sistémico en el tratamiento de los trastornos temporomandibulares, y únicamente se utilizan para combatir la inflamación muscular y articular generalizada y aguda que producen las poliartritis. Un tipo de corticoide oral es la metilprednisolona, disponible en una presentación que proporciona una dosis significativa en una primera fase del tratamiento seguida de un aumento gradual de la dosis hasta la interrupción de la medicación, por ejemplo 4 mg durante 6 días.",a:false,
+ pista:"Piensa cómo se retira un corticoide para evitar problemas al suspenderlo.",
+ fb:"Cambió una palabra: la presentación proporciona una dosis significativa al principio seguida de una REDUCCIÓN gradual de la dosis. Es la forma más segura de usar un corticoide cuando se quiere evitar una infección secundaria tras retirar la medicación.",pg:"p. 270"},
+
+{t:"vf",niv:1,tema:T.FC,q:"La mayoría de los relajantes musculares se han prescrito durante muchos años a pacientes con trastornos temporomandibulares, aunque la mayoría de los clínicos consideran que tienen un efecto mínimo sobre los síntomas, algo que se comprende si se considera que la mayoría de los trastornos miálgicos no se acompañan de un aumento significativo de la actividad muscular. La mayoría de los relajantes musculares tienen un efecto periférico que produce sedación en el paciente, y quizá sea esa sedación la principal explicación de la respuesta positiva de algunos pacientes.",a:false,
+ pista:"Si el efecto fuera donde dice el párrafo, no produciría sedación.",
+ fb:"Cambió una palabra: la mayoría de los relajantes musculares tienen un efecto CENTRAL que produce sedación. El razonamiento del principio, que los trastornos miálgicos no cursan con más actividad muscular, es correcto.",pg:"p. 271"},
+
+{t:"vf",niv:3,tema:T.FC,q:"Experimentalmente, los relajantes musculares deprimen preferentemente los reflejos medulares polisinápticos más que los monosinápticos, y alteran la actividad neuronal asociada a los reflejos de estiramiento muscular, fundamentalmente a nivel de la zona reticular lateral del tronco del encéfalo. La metaxalona es un relajante muscular con menos efectos centrales, por lo que puede resultar más apropiado para los pacientes que tienen que trabajar mientras toman relajantes musculares. Conviene advertirles del efecto sedante y aconsejarles que no conduzcan ni manipulen maquinaria pesada.",a:true,
+ pista:"Un relajante de esta lista es el indicado para quien tiene que seguir trabajando.",
+ fb:"Correcto. Y el libro añade que las dosis orales de estos fármacos son muy inferiores a las necesarias para provocar experimentalmente una relajación muscular.",pg:"p. 271"},
+
+{t:"vf",niv:3,tema:T.FC,q:"Un relajante muscular que parece influir positivamente en el dolor muscular de varias maneras, así como en los dolores debidos a trastornos temporomandibulares, es la ciclobenzaprina. Esta medicación es un compuesto similar a los antidepresivos tricíclicos y, por tanto, puede actuar de forma similar. Una dosis única de 5-10 mg antes de acostarse puede reducir el dolor muscular, especialmente por la noche. Otra dosis de 5-10 mg durante el día puede ser útil para el dolor, pero es frecuente que los pacientes indiquen que les dificulta demasiado sus actividades normales.",a:false,
+ pista:"¿En qué momento del día nota el paciente el beneficio de una dosis tomada al acostarse?",
+ fb:"Cambió una palabra: la dosis nocturna reduce el dolor muscular especialmente por la MAÑANA. El parecido con los antidepresivos tricíclicos y las dosis de 5-10 mg sí son correctos.",pg:"p. 271"},
+
+{t:"vf",niv:1,tema:T.FC,q:"Cuando se piensa que son los niveles elevados de estrés emocional los que contribuyen a los trastornos temporomandibulares, los agentes ansiolíticos pueden ayudar a tratar los síntomas. Conviene recordar que los agentes ansiolíticos no eliminan el estrés, sino que simplemente modifican la percepción o la reacción del paciente frente a él, por lo que su uso constituye un tratamiento de apoyo. Un grupo de ansiolíticos utilizados habitualmente son las benzodiazepinas, entre las que se ha prestado un interés especial al diazepam.",a:true,
+ pista:"La clave está en si el fármaco quita el estrés o sólo cambia cómo lo vive el paciente.",
+ fb:"Correcto, y por eso los ansiolíticos son tratamiento de apoyo y no definitivo: no tocan el factor etiológico.",pg:"p. 271"},
+
+{t:"vf",niv:3,tema:T.FC,q:"El diazepam se puede prescribir para uso diario, pero debido a su posible dependencia no debe utilizarse durante más de 7 días consecutivos. Una dosis única de 2,5-5 mg al acostarse suele ser útil para relajar la musculatura y, tal vez, disminuir la actividad parafuncional nocturna; cuando sólo se prescribe esa dosis única, la duración de su uso puede extenderse a 2 meses. Según la tabla, su dosis diaria media es de 2-5 mg dos veces al día y la máxima de 10 mg al día.",a:false,
+ pista:"Compara el plazo de la dosis única con el límite que la tabla pone a todas las benzodiazepinas.",
+ fb:"Cambió una palabra: con dosis única nocturna el uso puede extenderse a 2 SEMANAS, no a 2 meses. Las cifras de 7 días, 2,5-5 mg y 10 mg al día son correctas.",pg:"p. 271 y tabla 11-6"},
+
+{t:"vf",niv:2,tema:T.FC,q:"Otras dos benzodiazepinas que se han utilizado con ciertos trastornos de los músculos masticatorios son el clonazepam y el alprazolam. Estos agentes pueden ser útiles para el tratamiento de los síntomas agudos, especialmente los relacionados con la ansiedad y, posiblemente, el bruxismo nocturno. No obstante, como sucede con el diazepam, el potencial adictivo y los efectos sedantes contraindican su uso a largo plazo en los trastornos más crónicos. Ambos comparten una dosis diaria máxima de 4 mg y el límite de no más de 14 días.",a:true,
+ pista:"Las tres benzodiazepinas de la tabla comparten un límite de días; sólo una tiene un máximo distinto.",
+ fb:"Correcto. El diazepam es el que tiene un máximo distinto, de 10 mg al día; clonazepam y alprazolam coinciden en 4 mg al día.",pg:"p. 271 y tabla 11-6"},
+
+{t:"vf",niv:3,tema:T.FC,q:"Los fármacos anticonvulsivos se han utilizado tradicionalmente para las crisis de gran mal y pequeño mal asociadas con la epilepsia, y se cree que estabilizan las membranas nerviosas haciéndolas más excitables, bajando así el ritmo de la actividad nerviosa de las células cerebrales asociadas con las crisis. Como a medida que se prolonga la experiencia dolorosa el sistema nervioso central muestra sensibilización central, el clínico puede desear utilizar alguno de estos fármacos para ayudar a disminuir ese mecanismo central.",a:false,
+ pista:"Si la membrana quedara así, la actividad nerviosa aumentaría en vez de bajar. El párrafo se contradice solo.",
+ fb:"Cambió una palabra: los anticonvulsivos estabilizan las membranas nerviosas haciéndolas MENOS excitables. El resto, sobre la sensibilización central, es correcto.",pg:"p. 272"},
+
+{t:"vf",niv:2,tema:T.FD,q:"Otro método para la aplicación de la medicación es a través de la piel y de las mucosas orales. Cuando la medicación se aplica tópicamente, una parte de ella puede ser absorbida por los tejidos, lo que permite su actuación en la zona dolorosa. La ventaja de esta medicación es que penetra sólo y localmente en el tejido en el que se aplica, por lo que el paciente no sufre efectos sistémicos adversos. Con trastornos dolorosos que tienen su origen en los tejidos locales puede ser útil; sin embargo, si la fuente del dolor es más periférica, este abordaje puede ser menos útil.",a:false,
+ pista:"¿Qué tipo de origen del dolor es el que un fármaco aplicado en la piel no puede alcanzar?",
+ fb:"Cambió una palabra: el abordaje tópico es menos útil cuando la fuente del dolor es más CENTRAL. La ventaja de no producir efectos sistémicos adversos sí es correcta.",pg:"p. 273"},
+
+{t:"vf",niv:3,tema:T.FD,q:"La capsaicina es el ingrediente activo encontrado en los pimientos picantes y, a pesar de que produce mucho dolor, no existe evidencia de lesión tisular en la zona de aplicación. Se cree que excita una respuesta nociceptiva activando el receptor vaniloide 1 en la sinapsis de la neurona de segundo orden, y que cuando estos receptores se activan repetidamente el proceso de nocicepción se atenúa. La capsaicina tópica está disponible sin receta en dos concentraciones, al 0,025% y al 0,075%, y ha de aplicarse al menos 3 veces al día durante 7-10 días.",a:true,
+ pista:"Receptor, mecanismo, dos concentraciones y pauta de aplicación: todo es comprobable.",
+ fb:"Todo correcto. Como los resultados no son inmediatos el paciente puede desanimarse, y por eso la capsaicina puede mezclarse con benzocaína para atenuar la experiencia dolorosa inicial.",pg:"p. 273"},
+
+{t:"vf",niv:1,tema:T.C11D,q:"El tratamiento de apoyo va dirigido a modificar los síntomas del paciente y a menudo no tiene efecto alguno en la etiología del trastorno. Un ejemplo sencillo es administrar al paciente un comprimido de ácido acetilsalicílico para una cefalea causada por el hambre: el paciente nota alivio, pero no se modifica el factor etiológico que causa el síntoma. El clínico debe recordar siempre que el tratamiento de apoyo es sólo sintomático y, en general, no es apropiado para un tratamiento a largo plazo de los trastornos temporomandibulares.",a:true,
+ pista:"El ejemplo de la cefalea por hambre es la definición misma de tratamiento de apoyo.",
+ fb:"Correcto. Los dos tipos generales de tratamiento de apoyo son el tratamiento farmacológico y la fisioterapia.",pg:"p. 268"},
+
+{t:"vf",niv:2,tema:T.C11D,q:"El tratamiento oclusal reversible modifica el estado oclusal del paciente permanentemente, y el ejemplo más habitual es el dispositivo oclusal, que se coloca sobre los dientes y modifica la posición mandibular y el contacto de los dientes. El tratamiento oclusal irreversible, en cambio, es cualquier tratamiento que altere temporalmente el estado oclusal o la posición mandibular, como el ajuste selectivo, los procedimientos de prostodoncia, la ortodoncia y la cirugía.",a:false,
+ pista:"Pregúntate qué ocurre cuando el paciente se quita el dispositivo, y qué ocurre cuando le tallan un diente.",
+ fb:"Están cambiadas: el reversible modifica el estado oclusal TEMPORALMENTE y el irreversible lo altera PERMANENTEMENTE. Los ejemplos que da el párrafo para cada uno sí son los correctos.",pg:"pp. 261-262"},
+
+{t:"vf",niv:2,tema:T.C11D,q:"La revisión de los estudios a largo plazo muestra que los tratamientos conservadores y los no conservadores presentan porcentajes de éxito similares, del 70 al 85%. Como los tratamientos conservadores son reversibles y no invasivos, el principio que se desprende es que todo tratamiento inicial para los trastornos temporomandibulares debe ser conservador, reversible y no invasivo. Además, hay que recordar que los factores oclusales pueden influir por una modificación aguda del estado oclusal o por una inestabilidad ortopédica combinada con carga.",a:true,
+ pista:"Son las conclusiones de las tablas 11-1 y 11-2 más la regla con la que arranca el capítulo.",
+ fb:"Correcto. La simple presencia de interferencias oclusales no indica etiología, porque casi todos los individuos las tienen.",pg:"pp. 260-261"},
+
+/* ===== Trastornos musculares y de la ATM ===== */
+{t:"vf",niv:2,tema:T.C12M,q:"La cocontracción protectora es la respuesta inicial del músculo a la alteración de los estímulos sensitivos o a una lesión, y no es un trastorno patológico sino una respuesta fisiológica normal del sistema musculoesquelético. Clínicamente el paciente refiere una sensación de debilidad muscular, con dolor mínimo en reposo que aumenta con la función, y si se le pide puede alcanzar una amplitud de apertura casi normal. Esta cocontracción sólo persiste unas semanas y, si no se resuelve, es probable que aparezca el dolor muscular local.",a:false,
+ pista:"Todo el párrafo describe un cuadro agudo; mira la unidad de tiempo del final.",
+ fb:"Cambió una palabra: la cocontracción protectora sólo persiste unos DÍAS. Lo demás, incluida la sensación de debilidad y el dolor mínimo en reposo, es correcto.",pg:"pp. 291-292"},
+
+{t:"vf",niv:3,tema:T.C12M,q:"El dolor muscular local es a menudo la primera respuesta del tejido muscular a una cocontracción protectora continuada, y se distingue de ella porque el paciente presenta una debilidad muscular real y dolor local a la palpación, sin poder alcanzar el rango máximo de apertura. Debe responder al tratamiento en 1 a 3 semanas, y si no lo hace hay que considerar un error diagnóstico. El riesgo de no tratarlo es que el propio dolor cree una cocontracción secundaria y se instaure un dolor muscular cíclico.",a:true,
+ pista:"Lo que separa este cuadro de la cocontracción es el tipo de debilidad y el dolor a la palpación.",
+ fb:"Correcto. Por eso el objetivo primario del tratamiento definitivo es reducir el estímulo sensitivo que llega al sistema nervioso central.",pg:"pp. 292-294"},
+
+{t:"vf",niv:1,tema:T.C12M,q:"El dolor miofascial es un trastorno doloroso miógeno sistémico caracterizado por bandas duras e hipersensibles llamadas puntos gatillo, que al ser estimuladas producen dolor heterotópico. Un rasgo clínico importante es que el síntoma que refiere el paciente suele ser ese dolor referido, por ejemplo una cefalea tensional, y no el origen real del dolor, de modo que si el clínico no es cuidadoso tratará los dolores secundarios y el tratamiento fracasará.",a:false,
+ pista:"¿Cuál de los trastornos miálgicos es el regional y cuál el que afecta a todo el cuerpo?",
+ fb:"Cambió una palabra: el dolor miofascial es un trastorno miógeno REGIONAL. El trastorno miálgico sistémico es la fibromialgia. La descripción de los puntos gatillo y del dolor referido es correcta.",pg:"pp. 294 y 297-298"},
+
+{t:"vf",niv:3,tema:T.C12M,q:"En la mialgia crónica de mediación central el dolor se debe fundamentalmente a efectos del sistema nervioso central que se perciben a nivel periférico, mediante una inflamación neurógena en la que las neuronas aferentes liberan en los tejidos sustancia P y bradicinina. Como el tejido ya está inflamado, hay que evitar el ejercicio y las inyecciones, y la terapia propia del dolor muscular local mejora a menudo este cuadro, lo que sirve además como dato diagnóstico.",a:false,
+ pista:"El libro usa la respuesta al tratamiento como pista diagnóstica, pero en el sentido contrario al que dice el párrafo.",
+ fb:"Cambió una palabra: la terapia del dolor muscular local a menudo AGRAVA la mialgia crónica de mediación central. El mecanismo de inflamación neurógena y la contraindicación de inyecciones y ejercicio sí son correctos.",pg:"pp. 300-301"},
+
+{t:"vf",niv:1,tema:T.C11P,q:"La termoterapia se basa en la premisa de que el aumento del flujo sanguíneo en la zona favorece la curación, y reduce los síntomas creando una vasodilatación en los tejidos comprometidos que contrarresta la reducción del flujo sanguíneo. Se aplica con una toalla caliente de 10 a 15 minutos, sin superar los 30. La crioterapia, en cambio, se aplica con hielo en movimiento circular y se retira al aparecer el entumecimiento, sin permanecer sobre los tejidos más de 5 a 7 minutos.",a:true,
+ pista:"Son dos tiempos distintos; comprueba cuál corresponde al calor y cuál al hielo.",
+ fb:"Correcto. El calor alivia además por mecanismos de control de entrada, con fibras A-beta que enmascaran el estímulo de las fibras C.",pg:"pp. 273-274"},
+
+{t:"vf",niv:3,tema:T.C11P,q:"La estimulación nerviosa eléctrica transcutánea emplea una corriente monofásica de alto voltaje, de intensidad reducida y frecuencia variable, cuya estimulación continua de las fibras nerviosas cutáneas produce un efecto de contraestimulación sensitiva que disminuye la percepción del dolor. Si se aumenta la intensidad hasta activar las fibras motoras, la unidad deja de servir para controlar el dolor y se comporta como una unidad de estimulación electrogalvánica.",a:false,
+ pista:"Compara el tipo de corriente de la TENS con el de la estimulación electrogalvánica.",
+ fb:"Cambió una palabra: la TENS emplea una corriente BIFÁSICA de bajo voltaje. La monofásica de alto voltaje es la de la estimulación electrogalvánica, que es justo en lo que se convierte si subes la intensidad.",pg:"p. 277"},
+
+{t:"vf",niv:2,tema:T.C13D,q:"En la luxación discal sin reducción el paciente presenta una limitación de la apertura de 25 a 30 mm, con deflexión hacia el lado afectado y movimiento excéntrico normal en dirección ipsilateral pero limitado en dirección contralateral. El aparato de reposicionamiento anterior está contraindicado en este trastorno, porque sólo agravaría la situación al forzar el disco a una posición aún más avanzada.",a:true,
+ pista:"Dibuja la articulación bloqueada y piensa de qué lado se pierde la traslación.",
+ fb:"Correcto en los tres datos. Si el bloqueo lleva una semana o menos, la manipulación manual suele ser muy eficaz, porque el disco todavía conserva su morfología.",pg:"p. 325"},
+
+{t:"vf",niv:3,tema:T.C13D,q:"En la luxación espontánea el cóndilo queda por delante de la eminencia y el paciente no puede cerrar la boca, lo que constituye un bloqueo abierto. El tratamiento definitivo va dirigido a disminuir el espacio discal para que la lámina retrodiscal superior pueda retraer el disco, y por eso se pide al paciente que abra del todo la boca, como al bostezar, lo que activa los músculos depresores e inhibe los elevadores.",a:false,
+ pista:"Si el espacio discal está colapsado, ¿qué hay que hacer con él para que el disco vuelva a su sitio?",
+ fb:"Cambió una palabra: el tratamiento va dirigido a AUMENTAR el espacio discal. La maniobra de abrir del todo la boca y el mecanismo de depresores e elevadores sí son correctos.",pg:"p. 333"},
+
+/* ---------------- SELECCIÓN MÚLTIPLE (30) ---------------- */
+
+/* ===== Analgésicos y combinaciones ===== */
+{t:"mc",niv:2,tema:T.FA,q:"Según la tabla de analgésicos, ¿cuál es la dosis diaria máxima del paracetamol?",
+ o:["1 g por dosis y 4 g al día","650 mg por dosis y 2 g al día","1,5 g al día","3.200 mg al día"],c:0,
+ pista:"Es el único de la tabla que lleva un tope por dosis además del tope diario.",
+ fb:"Su dosis media es de 325 a 1.000 mg cada 4 horas. El ácido acetilsalicílico comparte el tope de 4 g al día, pero sin límite por dosis.",pg:"tabla 11-3, p. 269"},
+
+{t:"mc",niv:3,tema:T.FA,q:"Dosis diaria máxima del ibuprofeno:",
+ o:["3.200 mg al día","1.500 mg al día","2.400 mg al día","1.650 mg al día"],c:0,
+ pista:"Su dosis media es de 400 a 800 mg dos o tres veces al día.",
+ fb:"Ojo con las vecinas de la tabla: 1.500 mg/día es el naproxeno y el diflunisal, y 1.650 mg/día el naproxeno sódico.",pg:"tabla 11-3, p. 269"},
+
+{t:"mc",niv:3,tema:T.FA,q:"La tabla de analgésicos limita el naproxeno a 1.500 mg al día, pero añade una condición. ¿Cuál?",
+ o:["Durante 3 a 5 días","Durante 2 semanas","No más de 14 días","Máximo 2 a 3 semanas"],c:0,
+ pista:"El naproxeno sódico lleva la misma condición, con un máximo distinto.",
+ fb:"Naproxeno 1.500 mg/día y naproxeno sódico 1.650 mg/día, ambos durante 3-5 días. Las otras condiciones son de otros fármacos: el ketoprofeno lleva 2 semanas, las benzodiazepinas 14 días y el carisoprodol 2-3 semanas.",pg:"tabla 11-3, p. 269"},
+
+{t:"mc",niv:3,tema:T.FA,q:"¿Cuál es la combinación de analgésicos en un solo comprimido que el libro pone como ejemplo habitual?",
+ o:["400 mg de aspirina con 32 mg de cafeína","325 mg de aspirina con 65 mg de cafeína",
+    "500 mg de paracetamol con 30 mg de codeína","250 mg de aspirina con 37,5 mg de tramadol"],c:0,
+ pista:"Son dos componentes: un salicilato y un estimulante.",
+ fb:"Se pauta 1 o 2 comprimidos 3 veces al día, con un máximo de 6 comprimidos al día. La otra combinación con cafeína es la de aspirina 250 mg, paracetamol 250 mg y cafeína 65 mg.",pg:"p. 269 y tabla 11-3"},
+
+{t:"mc",niv:3,tema:T.FA,q:"La combinación de tramadol y paracetamol que recoge la tabla es:",
+ o:["37,5 mg de tramadol con 325 mg de paracetamol, 2 comprimidos cada 4-6 horas, máximo 8 al día",
+    "50 mg de tramadol con 500 mg de paracetamol, 1 comprimido cada 6 horas, máximo 4 al día",
+    "37,5 mg de tramadol con 500 mg de paracetamol, 3 veces al día, máximo 6 al día",
+    "25 mg de tramadol con 325 mg de paracetamol, cada 8 horas, máximo 8 al día"],c:0,
+ pista:"Es la única combinación de la tabla cuyo máximo son 8 comprimidos al día.",
+ fb:"Las dos combinaciones con cafeína, en cambio, se pautan 1-2 comprimidos 3 veces al día con un máximo de 6 comprimidos al día.",pg:"tabla 11-3, p. 269"},
+
+{t:"mc",niv:1,tema:T.FA,q:"¿Qué fármacos señala el libro como contraindicados para el dolor musculoesquelético por ser muy adictivos?",
+ o:["Oxicodona, sulfato de morfina y metadona","Codeína, hidrocodona y tramadol",
+    "Diazepam, clonazepam y alprazolam","Gabapentina, pregabalina y carbamazepina"],c:0,
+ pista:"No son los que sí pueden combinarse con un salicilato o con paracetamol.",
+ fb:"La codeína y la hidrocodona sí pueden combinarse con un salicilato o con paracetamol cuando hace falta un analgésico más potente, siempre en dosis regulares y por poco tiempo.",pg:"p. 269"},
+
+/* ===== Antiinflamatorios y corticoides ===== */
+{t:"mc",niv:1,tema:T.FB,q:"Cuando los AINE se toman buscando su efecto antiinflamatorio, ¿durante cuánto tiempo deben tomarse como mínimo?",
+ o:["De 2 a 3 semanas","De 3 a 5 días","De 7 a 10 días","De 1 a 2 meses"],c:0,
+ pista:"La razón es que con estos fármacos no se obtienen buenos niveles en sangre de forma inmediata.",
+ fb:"Ése es el dato que separa tomar un AINE como analgésico de tomarlo como antiinflamatorio. Se usan cuando se sospecha inflamación tisular tipo capsulitis, retrodiscitis u osteoartritis, y siempre con comida para disminuir las molestias gástricas.",pg:"p. 270"},
+
+{t:"mc",niv:1,tema:T.FB,q:"¿En qué interviene la vía COX-1?",
+ o:["En el mantenimiento de la función homeostática y la integridad gástrica y renal",
+    "En la respuesta inflamatoria, de forma predominante",
+    "En la síntesis de ácido araquidónico a partir de las prostaglandinas",
+    "En la excitación directa de los nociceptores periféricos"],c:0,
+ pista:"Una de las dos vías es la protectora y la otra la inflamatoria.",
+ fb:"La vía COX-2 es la que tiene mayores efectos en la respuesta inflamatoria. Como la mayoría de los AINE inhiben ambas, reducen el dolor pero también irritan el estómago.",pg:"p. 270"},
+
+{t:"mc",niv:3,tema:T.FB,q:"Pauta de metilprednisolona que recoge la tabla de antiinflamatorios:",
+ o:["4 mg durante 6 días, disminuyendo la dosis diariamente","8 mg durante 5 días en dosis fija",
+    "4 mg cada 4-6 horas durante 5 días","16 mg el primer día y 4 mg los 3 siguientes"],c:0,
+ pista:"La gracia de esa presentación está en cómo termina, no en cómo empieza.",
+ fb:"Da una dosis significativa al principio y después la reduce gradualmente hasta interrumpirla. Es la presentación más segura para evitar una infección secundaria una vez retirada la medicación.",pg:"p. 270 y tabla 11-4"},
+
+{t:"mc",niv:3,tema:T.FB,q:"Sobre el ketorolaco trometamol en comprimidos, ¿qué es correcto?",
+ o:["Dosis media de 10 mg cada 4-6 horas, máximo 40 mg al día y no más de 5 días",
+    "Dosis media de 30 mg cada 8 horas, máximo 90 mg al día y no más de 10 días",
+    "Dosis media de 10 mg 3 veces al día, máximo 60 mg al día y no más de 2 semanas",
+    "Dosis media de 20 mg cada 6 horas, máximo 80 mg al día y no más de 7 días"],c:0,
+ pista:"Es el fármaco de la tabla con el plazo más corto de todos.",
+ fb:"Está indicado sólo a corto plazo para el dolor de moderado a grave y es útil en el traumatismo agudo de la mandíbula. Inyectado en los músculos grandes la dosis habitual está entre 30 y 60 mg.",pg:"p. 270 y tabla 11-4"},
+
+{t:"mc",niv:2,tema:T.FB,q:"¿Qué es correcto sobre el celecoxib?",
+ o:["Actúa predominantemente sobre la COX-2, se toma 1 o 2 veces al día y su máximo es de 400 mg al día",
+    "Inhibe ambas vías por igual y su máximo es de 200 mg al día",
+    "Es un corticoide oral que se pauta en dosis descendente durante 6 días",
+    "Su principal ventaja es que ha demostrado ser más eficaz que el naproxeno"],c:0,
+ pista:"Una de las opciones le atribuye una ventaja que el libro justamente pone en duda.",
+ fb:"Los estudios iniciales sugieren que ayuda en el dolor de los TTM, aunque quizá no más eficazmente que el naproxeno; su ventaja real son los menores efectos gástricos.",pg:"p. 270 y tabla 11-4"},
+
+/* ===== Relajantes, ansiolíticos y anticonvulsivos ===== */
+{t:"mc",niv:1,tema:T.FC,q:"¿Cuál es el relajante muscular con menos efectos centrales, más apropiado para el paciente que tiene que trabajar?",
+ o:["Metaxalona","Ciclobenzaprina","Carisoprodol","Metocarbamol"],c:0,
+ pista:"El problema del resto es la sedación, que impide conducir o manejar maquinaria.",
+ fb:"La metaxalona se pauta 800 mg 3 o 4 veces al día, con un máximo de 2.400 mg al día.",pg:"p. 271 y tabla 11-5"},
+
+{t:"mc",niv:3,tema:T.FC,q:"Dosis media y máxima de la ciclobenzaprina según la tabla de relajantes musculares:",
+ o:["10 mg 3 veces al día, máximo 60 mg al día","5 mg 3 veces al día, máximo 30 mg al día",
+    "10 mg 4 veces al día, máximo 80 mg al día","800 mg 3 veces al día, máximo 2.400 mg al día"],c:0,
+ pista:"No confundas la pauta de la tabla con la dosis nocturna de 5-10 mg que recomienda el texto para el dolor matinal.",
+ fb:"El texto añade que una dosis única de 5-10 mg antes de acostarse reduce el dolor muscular sobre todo por la mañana, porque es un compuesto similar a los antidepresivos tricíclicos.",pg:"p. 271 y tabla 11-5"},
+
+{t:"mc",niv:3,tema:T.FC,q:"Dosis diaria máxima del metocarbamol:",
+ o:["8.000 mg al día","2.400 mg al día","1.500 mg al día","1.400 mg al día"],c:0,
+ pista:"Su dosis media es de 1.000 mg cuatro veces al día.",
+ fb:"Las otras cifras también están en la misma tabla: 2.400 mg/día la metaxalona, 1.500 mg/día la clorzoxazona y 1.400 mg/día el carisoprodol.",pg:"tabla 11-5, p. 271"},
+
+{t:"mc",niv:3,tema:T.FC,q:"El carisoprodol tiene una dosis máxima de 1.400 mg al día, con una limitación añadida. ¿Cuál?",
+ o:["Máximo de 2 a 3 semanas","No más de 14 días","Durante 3 a 5 días","Máximo 5 días"],c:0,
+ pista:"No lo confundas con el límite de las benzodiazepinas ni con el del ketorolaco.",
+ fb:"Su dosis media es de 250 mg 3 veces al día. En la misma tabla, el baclofeno llega a 80 mg/día y debe retirarse lentamente, y la clorzoxazona admite 750 mg como máximo en una sola dosis.",pg:"tabla 11-5, p. 271"},
+
+{t:"mc",niv:3,tema:T.FC,q:"Dosis diaria máxima del diazepam según la tabla de ansiolíticos:",
+ o:["10 mg al día, no más de 14 días","4 mg al día, no más de 14 días",
+    "20 mg al día durante 7 días","5 mg al día sin límite de tiempo"],c:0,
+ pista:"Clonazepam y alprazolam comparten entre ellos otra cifra máxima distinta.",
+ fb:"Diazepam 10 mg/día, con dosis media de 2-5 mg dos veces al día. Clonazepam y alprazolam tienen máximo de 4 mg/día, con el mismo límite de 14 días.",pg:"tabla 11-6, p. 271"},
+
+{t:"mc",niv:3,tema:T.FC,q:"Sobre la gabapentina, ¿cuál es la pauta correcta?",
+ o:["Iniciar con 300 mg al acostarse, aumentar hasta 1.800 mg al día o hasta que sea eficaz, máximo 3.600 mg al día",
+    "Iniciar con 150 mg al día divididos en 2 o 3 dosis, máximo 300 mg al día",
+    "300 mg 3 veces al día desde el inicio, máximo 1.800 mg al día",
+    "600 mg al acostarse, aumentar hasta 2.400 mg al día, máximo 3.600 mg al día"],c:0,
+ pista:"Una de las opciones es en realidad la pauta de la pregabalina.",
+ fb:"La pregabalina se pauta 150-300 mg al día divididos en 2 o 3 dosis, con un máximo de 300 mg al día. Ninguno de los dos es apropiado para el dolor agudo de los TTM.",pg:"tabla 11-8, p. 272"},
+
+/* ===== Tópicos y normas de prescripción ===== */
+{t:"mc",niv:2,tema:T.FD,q:"¿En qué concentraciones está disponible la capsaicina tópica como analgésico de venta sin receta?",
+ o:["Al 0,025% y al 0,075%","Al 2% y al 5%","Al 0,05% y al 0,1%","Al 5% y al 10%"],c:0,
+ pista:"Son concentraciones muy bajas; no las confundas con las del parche de lidocaína.",
+ fb:"Se aplica al menos 3 veces al día durante 7-10 días. El 5% corresponde al parche transdérmico de lidocaína y el 10% a la crema de hidrocortisona de la fonoforesis.",pg:"p. 273"},
+
+{t:"mc",niv:1,tema:T.FD,q:"¿De qué fármacos abusan con más frecuencia los pacientes, según el apartado de tratamiento farmacológico?",
+ o:["De los analgésicos narcóticos y los ansiolíticos","De los AINE y los corticoides",
+    "De los relajantes musculares y los anticonvulsivos","De los antiinflamatorios tópicos"],c:0,
+ pista:"Son los que producen un breve período de euforia o sensación de bienestar.",
+ fb:"Esa euforia puede convertirse en una recompensa inconsciente por haber sufrido dolor. Por eso se prescribe a intervalos regulares durante un período definido y no según las necesidades.",pg:"pp. 268-269"},
+
+/* ===== Tratamiento definitivo ===== */
+{t:"mc",niv:1,tema:T.C11D,q:"¿Cuáles son los cinco factores etiológicos cuyo tratamiento definitivo analiza el capítulo 11?",
+ o:["Factores oclusales, estrés emocional, traumatismos, estímulos dolorosos profundos y actividad parafuncional",
+    "Factores oclusales, inestabilidad ortopédica, bruxismo, traumatismos y alteraciones del sueño",
+    "Estrés emocional, depresión, trastornos del sueño, postura y actividad parafuncional",
+    "Macrotraumatismos, microtraumatismos, dolor profundo, maloclusión y apretamiento"],c:0,
+ pista:"Son los mismos cinco que el capítulo 7 identifica como etiología de los TTM.",
+ fb:"Y la regla que cierra el apartado: todo tratamiento inicial debe ser conservador, reversible y no invasivo.",pg:"p. 261"},
+
+{t:"mc",niv:2,tema:T.C11D,q:"Ante un macrotraumatismo ya ocurrido que ha producido lesión tisular, el tratamiento:",
+ o:["Sólo puede ser de apoyo, porque la etiología ya no está presente",
+    "Es definitivo, mediante un aparato de reposicionamiento anterior",
+    "Es definitivo, mediante ajuste oclusal para dar estabilidad ortopédica",
+    "Debe ser quirúrgico si hay dolor articular asociado"],c:0,
+ pista:"Compara macrotraumatismo con microtraumatismo: en uno la causa persiste y en el otro no.",
+ fb:"El traumatismo dejó de actuar, así que el tratamiento definitivo no tiene relevancia; sí cabe la prevención, con protector bucal en deportistas. En el microtraumatismo sí hay tratamiento definitivo: crear condiciones de carga favorables.",pg:"p. 267"},
+
+/* ===== Trastornos musculares ===== */
+{t:"mc",niv:1,tema:T.C12M,q:"¿Cuáles son los cinco tipos de trastornos de los músculos masticatorios que describe el capítulo 12?",
+ o:["Cocontracción protectora, dolor muscular local, dolor miofascial, mioespasmo y mialgia crónica de mediación central",
+    "Cocontracción protectora, dolor muscular local, dolor miofascial, fibromialgia y bruxismo del sueño",
+    "Mioespasmo, dolor miofascial, miositis, fibromialgia y distonía oromandibular",
+    "Dolor muscular local, mialgia de mediación central, fibromialgia, apretamiento diurno y bruxismo"],c:0,
+ pista:"La fibromialgia y los trastornos motores centrales se comentan aparte, no forman parte de esos cinco.",
+ fb:"El texto añade por separado otros dos grupos: los trastornos motores de mediación central y la fibromialgia.",pg:"p. 291"},
+
+{t:"mc",niv:2,tema:T.C12M,q:"En el tratamiento definitivo del dolor muscular local, ¿cuál es el objetivo primario?",
+ o:["Reducir el estímulo sensitivo, es decir el dolor, que llega al sistema nervioso central",
+    "Relajar farmacológicamente los músculos elevadores contraídos",
+    "Restablecer de inmediato la amplitud máxima de apertura con ejercicios",
+    "Corregir la inestabilidad ortopédica mediante ajuste oclusal"],c:0,
+ pista:"El riesgo del dolor muscular local es que acabe generando un dolor muscular cíclico.",
+ fb:"Se trata de cortar la entrada de estímulo doloroso, porque ese dolor crea cocontracción secundaria y con el tiempo dolor muscular cíclico.",pg:"p. 293"},
+
+{t:"mc",niv:3,tema:T.C12M,q:"¿Por qué los relajantes musculares son poco útiles en el dolor muscular local?",
+ o:["Porque los músculos realmente no se están contrayendo: no hay una lectura mayor en el electromiograma",
+    "Porque no atraviesan la barrera hematoencefálica y no alcanzan el músculo",
+    "Porque el dolor muscular local es de origen inflamatorio y requiere AINE",
+    "Porque producen un efecto rebote que aumenta la actividad parafuncional nocturna"],c:0,
+ pista:"Piensa en lo que mide un electromiograma en este trastorno.",
+ fb:"Pueden relajar y sedar centralmente, pero no hay contracción que relajar. Por eso deberían emplearse muy poco, advirtiendo siempre de la somnolencia.",pg:"p. 296"},
+
+{t:"mc",niv:2,tema:T.C12M,q:"Un mioespasmo persistente no cede con hielo ni con masaje. Según el algoritmo, el siguiente paso es inyectar:",
+ o:["Lidocaína al 2% sin vasoconstrictor en el músculo afectado",
+    "Lidocaína al 2% con vasoconstrictor en el músculo afectado",
+    "Bupivacaína al 0,5% en el músculo afectado",
+    "Hidrocortisona intracapsular en la articulación del lado afectado"],c:0,
+ pista:"Para inyecciones musculares hay una regla fija sobre el vasoconstrictor, y otra sobre qué anestésico no debe entrar en el músculo.",
+ fb:"Para las inyecciones musculares debe usarse solución sin vasoconstrictor. La bupivacaína no debe inyectarse en músculo por su miotoxicidad, y si el mioespasmo es crónico o repetido hay que pensar en distonía oromandibular.",pg:"pp. 296-297 y 272"},
+
+/* ===== Trastornos motores centrales ===== */
+{t:"mc",niv:1,tema:T.C12C,q:"¿Cuál es el primer objetivo del tratamiento del apretamiento diurno?",
+ o:["La consciencia cognitiva: que el paciente se dé cuenta de que lo hace",
+    "Colocar un aparato de estabilización de uso diurno",
+    "Prescribir un ansiolítico durante las horas de trabajo",
+    "Realizar un ajuste oclusal que elimine los contactos prematuros"],c:0,
+ pista:"La respuesta inicial de la mayoría de los pacientes es que ellos no hacen eso.",
+ fb:"Después viene la posición de reposo: labios relajados, lengua en el suelo de la boca y dientes separados. Un estudio mostró que esta técnica era más eficaz que un dispositivo oclusal para disminuir el dolor muscular.",pg:"p. 306"},
+
+/* ===== Fisioterapia y ARF ===== */
+{t:"mc",niv:2,tema:T.C11P,q:"¿Qué modalidad introduce medicación en los tejidos mediante una corriente eléctrica baja aplicada sobre una almohadilla?",
+ o:["Iontoforesis","Fonoforesis","Estimulación electrogalvánica","TENS"],c:0,
+ pista:"Su hermana hace lo mismo pero con ultrasonidos.",
+ fb:"La fonoforesis administra el fármaco con ultrasonidos, por ejemplo crema de hidrocortisona al 10%. En iontoforesis se usan sobre todo anestésicos locales y antiinflamatorios.",pg:"p. 275"},
+
+{t:"mc",niv:3,tema:T.C11P,q:"¿De cuántos componentes de aprendizaje y entrenamiento consta el método de autorregulación física?",
+ o:["Ocho","Cuatro","Cinco","Diez"],c:0,
+ pista:"No lo confundas con las características de los pacientes con dolor orofacial muscular ni con los ejes del abordaje.",
+ fb:"Ocho componentes, desde explicar el trastorno hasta la higiene del sueño y la información sobre líquidos, nutrición y ejercicio. Cinco son las características de estos pacientes y cuatro los focos del abordaje de Bertrand y Carlson.",pg:"p. 280"},
+
+/* ===== Trastornos de la ATM ===== */
+{t:"mc",niv:2,tema:T.C13D,q:"¿Cuáles son las causas más frecuentes de microtraumatismo en las alteraciones discales?",
+ o:["Las lesiones de hipoxia-reperfusión, el bruxismo y la inestabilidad ortopédica",
+    "Los accidentes de tráfico, los golpes en la cara y las intubaciones",
+    "La apertura excesiva, las inyecciones y el uso desacostumbrado del músculo",
+    "Las adherencias, las adhesiones y la condromalacia"],c:0,
+ pista:"Son los mecanismos que el paciente no identifica en la historia clínica.",
+ fb:"Los macrotraumatismos sí suelen identificarse en la historia clínica; los microtraumatismos pasan desapercibidos.",pg:"p. 317"},
+
+{t:"mc",niv:3,tema:T.C13D,q:"Según los estudios a largo plazo, ¿en qué porcentaje de pacientes reducen los aparatos de reposicionamiento anterior los síntomas dolorosos del desplazamiento y la luxación discal con reducción?",
+ o:["75%","28%","66%","43%"],c:0,
+ pista:"Las otras cifras son el éxito si se exige eliminar también los ruidos y los pacientes que seguían con ruidos.",
+ fb:"En el mismo estudio el 66% seguía con ruidos articulares y sólo el 25% con dolor; si se exigiera eliminar dolor y ruidos, el éxito bajaría al 28%.",pg:"pp. 319-320"},
+
+/* ---------------- CASOS CLÍNICOS (10) ---------------- */
+{t:"caso",niv:1,tema:T.CASO,
+ ctx:[["Historia clínica","Vendedor de 41 años. Dolor en temporal y masetero derechos de 2 días de evolución, que empezó inmediatamente después de una obturación con amalgama. El dolor aumenta al usar los maxilares y casi desaparece al dejar de mover la boca."],
+      ["Exploración","Dolor a la palpación en temporal derecho (1) y masetero derecho (2). Apertura cómoda máxima 32 mm, máxima 52 mm. ATM sin dolor ni sensibilidad. Clic derecho a los 24 mm, asintomático, presente desde hace 15 años. Marca brillante en la obturación reciente."]],
+ q:"¿Cuál es el diagnóstico?",
+ o:["Cocontracción protectora secundaria a la colocación de una obturación alta",
+    "Dolor muscular local secundario a un traumatismo por la apertura prolongada",
+    "Mioespasmo del masetero derecho por fatiga muscular",
+    "Desplazamiento discal con reducción en la ATM derecha"],c:0,
+ pista:"Fíjate en el tiempo transcurrido (2 días), en la apertura casi normal y en qué significa esa marca brillante.",
+ fb:"El clic lleva 15 años y es asintomático: no es el problema. La clave es la alteración reciente del estímulo sensitivo con sólo 2 días de evolución. El tratamiento fue ajustar la amalgama y limitar el movimiento a la amplitud indolora.",pg:"caso 1, pp. 308-309"},
+
+{t:"caso",niv:2,tema:T.CASO,
+ ctx:[["Historia clínica","Estudiante de 19 años. Dolor muscular generalizado en el lado izquierdo de la cara que se acentúa al masticar, presente desde hace una semana. Tres episodios previos hace 2, 6 y 8 meses, todos coincidiendo con los exámenes de la universidad. Sin cambios en la oclusión."],
+      ["Exploración","Dolor a la palpación en ambos maseteros (1) y temporal izquierdo (1). Manipulación funcional del pterigoideo lateral inferior izquierdo muy molesta (3). Apertura cómoda 22 mm; máxima 33 mm y dolorosa; apertura pasiva hasta 45 mm con tope blando. ATM negativa."]],
+ q:"¿Cuál es el diagnóstico?",
+ o:["Dolor muscular local secundario a un aumento del estrés emocional",
+    "Mialgia crónica de mediación central por dolor muscular prolongado",
+    "Dolor miofascial con puntos gatillo en el pterigoideo lateral",
+    "Cocontracción protectora por una fuente de dolor profundo constante"],c:0,
+ pista:"El tope blando en la apertura pasiva descarta un problema intracapsular. Mira el patrón de repetición de los episodios.",
+ fb:"Episodios recidivantes ligados a los exámenes, una semana de evolución y ATM negativa. Se trató con consciencia del vínculo estrés-parafunción, ARF y aparato de estabilización nocturno.",pg:"caso 2, p. 309"},
+
+{t:"caso",niv:2,tema:T.CASO,
+ ctx:[["Historia clínica","Profesor de 38 años con limitación de apertura y dolor facial izquierdo de 10 días. Empezó poco después de una inyección de anestésico local; seis horas después la zona empezó a doler mucho. Los síntomas han empeorado lentamente y el dolor es máximo a primera hora de la mañana."],
+      ["Exploración","Pterigoideo medial izquierdo doloroso (2); temporales dolorosos (1). Apertura máxima cómoda 26 mm. ATM negativa para dolor y disfunción. Sin signos inusuales en la zona de inyección. Radiografía panorámica normal."]],
+ q:"¿Cuál es el diagnóstico?",
+ o:["Dolor muscular local secundario a cocontracción prolongada por traumatismo postinyección",
+    "Miositis infecciosa del pterigoideo medial por contaminación de la aguja",
+    "Mioespasmo del pterigoideo medial izquierdo",
+    "Trismo por hematoma en el espacio pterigomandibular"],c:0,
+ pista:"No hay signos de inflamación en la zona pinchada, pero el dolor sigue y es peor al despertar.",
+ fb:"El traumatismo postinyección ya se había resuelto: el dolor muscular local se había autoperpetuado como dolor muscular cíclico. Se trató con aparato de estabilización, limitación del uso, ibuprofeno 600 mg cada 8 horas, masaje y termoterapia.",pg:"caso 3, p. 309"},
+
+{t:"caso",niv:3,tema:T.CASO,
+ ctx:[["Historia clínica","Ama de casa de 36 años con dolor muy constante de 3 semanas en los músculos del lado derecho. Episodios previos similares, nunca tan intensos ni tan largos. Los síntomas se correlacionan con el estrés de cuidar a dos hijos pequeños. El dolor es máximo al despertarse."],
+      ["Exploración","Dolor generalizado a la palpación de esternocleidomastoideo y temporal derecho (1); dolor intenso en masetero derecho (3). Apertura cómoda máxima 18 mm. ATM sin dolor ni disfunción. Faltan los dos primeros molares mandibulares, con los segundos desviados hacia el espacio y desviación lateral de RC a máxima intercuspidación."]],
+ q:"¿Cuál es el diagnóstico?",
+ o:["Mialgia crónica de mediación central secundaria a un dolor muscular local prolongado",
+    "Dolor muscular local por inestabilidad ortopédica tras la pérdida de los molares",
+    "Dolor miofascial con punto gatillo en el masetero derecho",
+    "Fibromialgia con síntomas masticatorios secundarios"],c:0,
+ pista:"Tres semanas de dolor constante, apertura de 18 mm y episodios previos: el cuadro ya se ha cronificado.",
+ fb:"El tratamiento incluyó ARF, aparato de estabilización nocturno, tratamiento del estrés con psicólogo y ultrasonidos. Recién resueltos los síntomas se abordó la oclusión: enderezamiento ortodóncico y reposición de los primeros molares con implantes.",pg:"caso 4, pp. 309-310"},
+
+{t:"caso",niv:3,tema:T.CASO,
+ ctx:[["Historia clínica","Secretaria de 27 años con tensión en los músculos mandibulares y cefalea constante bilateral en las sienes desde hace 4 meses, peor tras un día entero con el ordenador. La tensión mandibular empeora al masticar, pero eso no agrava la cefalea; los movimientos y la rigidez del cuello sí la aumentan."],
+      ["Exploración","Apertura cómoda 24 mm, máxima 39 mm. Sin dolor ni ruidos articulares. Dolor bilateral a la palpación en maseteros (1). Los temporales NO son dolorosos a la palpación pese a que ahí se percibe la cefalea. Múltiples puntos gatillo en músculos posteriores del cuello y trapecio: la presión sobre ellos acentúa la cefalea temporal."]],
+ q:"¿Cuál es el diagnóstico?",
+ o:["Dolor miofascial en cuello y trapecio con cefalea tensional referida al área temporal, más cocontracción y dolor muscular local en maseteros",
+    "Mialgia de mediación central de los músculos temporales",
+    "Cefalea tensional primaria sin relación con el sistema masticatorio",
+    "Mioespasmo del trapecio con dolor referido a la ATM"],c:0,
+ pista:"El dolor se siente donde no duele a la palpación, y duele a la palpación donde el paciente no se queja.",
+ fb:"Ésa es la firma del dolor miofascial: el origen son los puntos gatillo del cuello y el trapecio, y lo que el paciente nota es el dolor heterotópico. El punto refractario del trapecio izquierdo se infiltró con 1 ml de lidocaína al 2% sin vasoconstrictor y después se distendió.",pg:"caso 5, p. 310"},
+
+{t:"caso",niv:2,tema:T.CASO,
+ ctx:[["Historia clínica","Varón de 27 años que acude de urgencia porque «se le ha quedado la boca bloqueada» desde que despertó hace 2 horas. No puede abrir bien y la mandíbula se le va hacia la izquierda. Dolor leve en reposo que aumenta mucho hacia el lado derecho al intentar cerrar los dientes. Sin antecedente de traumatismo."],
+      ["Exploración","Maloclusión aguda importante con la mandíbula desplazada unos 10 mm hacia la izquierda. Mordida abierta posterior derecha de 2-3 mm con contacto fuerte en el canino izquierdo. Abre 30 mm con deflexión izquierda. La manipulación funcional desencadena dolor derecho contra resistencia. Sin ruidos articulares. Panorámica normal."]],
+ q:"¿Cuál es el diagnóstico?",
+ o:["Mioespasmo del pterigoideo lateral inferior derecho",
+    "Luxación discal sin reducción de la ATM derecha",
+    "Luxación espontánea del cóndilo derecho",
+    "Dolor muscular local del masetero derecho con maloclusión funcional"],c:0,
+ pista:"La maloclusión aguda con mordida abierta posterior contralateral es el sello de un músculo concreto en contracción tónica.",
+ fb:"Se aplicó hielo y manipulación suave sin éxito, y después 1 ml de lidocaína al 2% sin epinefrina en el pterigoideo lateral derecho: a los 5 minutos se resolvió y se restableció la oclusión normal.",pg:"caso 6, p. 310"},
+
+{t:"caso",niv:2,tema:T.CASO,
+ ctx:[["Historia clínica","Mujer de 45 años con cefalea por toda la cabeza desde hace más de 2 meses, bilateral, irradiada por el cuello. Refiere además molestias musculares en hombros, espalda y piernas, no duerme bien, su nivel de energía es muy bajo y está deprimida. Sin traumatismo ni cambios dentales recientes."],
+      ["Exploración","Numerosos sitios de dolor muscular en cabeza y cuello, pero la palpación de las áreas más sensibles NO agrava ni intensifica la cefalea. Movimiento mandibular con limitación leve (38 mm), sin ruidos ni dolor articular. Oclusión estable en posición musculoesqueléticamente estable. Panorámica sin interés."]],
+ q:"¿Cuál es el diagnóstico provisional?",
+ o:["Fibromialgia con síntomas masticatorios secundarios",
+    "Dolor miofascial generalizado de cabeza y cuello",
+    "Mialgia crónica de mediación central bilateral",
+    "Cefalea tensional crónica por apretamiento diurno"],c:0,
+ pista:"Compáralo con el caso del trapecio: ahí la palpación reproducía la cefalea, aquí no. Y el dolor sale de la cabeza y el cuello.",
+ fb:"Dolor musculoesquelético sistémico, sueño no reparador, fatiga y depresión: el odontólogo debe identificarlo y derivar. El reumatólogo confirmó el diagnóstico; sólo se preparó un aparato de estabilización nocturno por el bruxismo.",pg:"caso 7, pp. 310-311"},
+
+{t:"caso",niv:3,tema:T.CASO,
+ ctx:[["Historia clínica","Mujer de 37 años con episodios de apertura bucal espontánea y repetida desde hace 4 años, más frecuentes en los últimos 6 meses. En un episodio tuvo un bloqueo abierto de horas y necesitó sedación en urgencias. Hace 2 años se sometió a eminectomías bilaterales que la aliviaron sólo 2 meses. Ahora los episodios recurren cada 2 o 3 semanas con mucho dolor; entre ellos hace vida normal sin dolor."],
+      ["Exploración","Realizada entre episodios: sin hallazgos inusuales. Nervios craneales y evaluación cervical normales. Palpación muscular sin dolor. Movimientos mandibulares normales, aunque evita abrir del todo. Oclusión sana en posición musculoesqueléticamente estable. Eminencias articulares lisas por la cirugía previa."]],
+ q:"¿Cuál es el diagnóstico y el tratamiento de elección?",
+ o:["Distonía oromandibular de boca abierta; toxina botulínica en los pterigoideos laterales con guía EMG",
+    "Luxación espontánea por causa anatómica; repetir la eminectomía bilateral",
+    "Subluxación crónica; aparato restrictivo durante 2 meses",
+    "Mioespasmo recidivante del pterigoideo lateral; inyecciones repetidas de lidocaína"],c:0,
+ pista:"La cirugía anatómica ya falló y los episodios se repiten sin causa aparente. ¿Qué origen queda?",
+ fb:"Bloqueos repetidos, no provocados y con exploración normal entre episodios apuntan a distonía. Se trató con gabapentina, lidocaína al 2% sin vasoconstrictor en el episodio agudo y 40 unidades de toxina botulínica A con aguja guiada por EMG; acude cada 3-4 meses a repetir la infiltración.",pg:"caso 8, p. 311"},
+
+{t:"caso",niv:3,tema:T.CASO,
+ ctx:[["Situación","Paciente con desplazamiento discal con reducción doloroso. Lleva 3 semanas con aparato de reposicionamiento anterior sólo nocturno y el dolor ha desaparecido. Se reduce el uso del aparato y a los pocos días el dolor reaparece."]],
+ q:"Según el algoritmo y el texto, ¿cuáles son las dos explicaciones posibles?",
+ o:["Que el tiempo de adaptación tisular no haya sido suficiente, o que exista inestabilidad ortopédica",
+    "Que el disco se haya perforado, o que haya aparecido una adhesión",
+    "Que exista bruxismo nocturno no controlado, o un error en el diagnóstico inicial",
+    "Que el aparato esté mal ajustado, o que el paciente no lo use las horas indicadas"],c:0,
+ pista:"Una explicación se resuelve con más tiempo; la otra es la única que obliga a tratamiento odontológico.",
+ fb:"La primera y más frecuente es que la reparación tisular no se haya completado: se devuelve el aparato y se da más tiempo. La segunda es la falta de estabilidad ortopédica, y es la única situación que requiere tratamiento odontológico, algo que según el autor ocurre en raras ocasiones.",pg:"p. 325 y fig. 13-10"},
+
+{t:"caso",niv:2,tema:T.CASO,
+ ctx:[["Situación","Paciente con luxación discal sin reducción crónica (luxación discal permanente), sin dolor pero con disfunción: su apertura se ha mantenido limitada durante meses."]],
+ q:"Según el algoritmo del capítulo 13, ¿cuál es la conducta correcta?",
+ o:["Ejercicio y fisioterapia para aumentar el grado funcional de la mandíbula",
+    "Aparato de reposicionamiento anterior nocturno para recapturar el disco",
+    "Artrocentesis inmediata para liberar el disco luxado",
+    "Aparato de estabilización 24 horas hasta recuperar la apertura"],c:0,
+ pista:"Dentro del cuadro crónico, el algoritmo se bifurca según exista o no dolor.",
+ fb:"Con disfunción SIN dolor: ejercicio y fisioterapia. Con disfunción CON dolor: evaluar el grado de patología y el efecto en la calidad de vida, y a partir de ahí observación con tratamiento de apoyo o considerar opciones quirúrgicas. El ARA sigue contraindicado.",pg:"fig. 13-13, p. 329"}
+];
+
+/* ============================================================
+   MOTOR
+   ============================================================ */
+const app=document.getElementById("app"), barra=document.getElementById("barra");
+const elOk=document.getElementById("cOk"), elNo=document.getElementById("cNo"),
+      elPr=document.getElementById("prog"), elPn=document.getElementById("pnum"),
+      elSalir=document.getElementById("bSalir");
+
+let cola=[], i=0, buenas=0, malas=0, pistas=0, historial=[], modoActual="";
+let sel=null, resuelto=false, pistaOn=false;
+
+const NIV=["","Fácil","Media","Difícil"];
+const TIPO={vf:"Verdadero o falso",mc:"Selección múltiple",caso:"Caso clínico"};
+const NOMBRE={todo:"Examen completo",vf:"Verdadero o falso",mc:"Selección múltiple",caso:"Casos clínicos"};
+
+const barajar=a=>{a=a.slice();for(let j=a.length-1;j>0;j--){const k=Math.floor(Math.random()*(j+1));[a[j],a[k]]=[a[k],a[j]]}return a};
+const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+/* las <em> del banco marcan la palabra cambiada: sirven para el feedback y
+   NUNCA se muestran en el enunciado, porque delatarían que la frase es falsa */
+const limpio=s=>s.replace(/<\/?em>/g,"");
+const arriba=()=>{if(window.scrollTo)window.scrollTo({top:0,behavior:"smooth"})};
+
+/* ---------- progreso guardado ---------- */
+const KEY="okeson_quiz_progreso_v2", KEY_R="okeson_quiz_resultados_v2";
+function guardar(){
+  try{
+    if(!cola.length||i>=cola.length){localStorage.removeItem(KEY);return}
+    localStorage.setItem(KEY,JSON.stringify({modo:modoActual,i,buenas,malas,pistas,
+      cola:cola.map(q=>({bi:q.bi,ord:q.ord||null})),
+      hist:historial.map(h=>({bi:h.bi,acierto:h.acierto})),fecha:Date.now()}));
+  }catch(e){}
+}
+function leerProgreso(){
+  try{
+    const s=JSON.parse(localStorage.getItem(KEY)||"null");
+    if(!s||!s.cola||!s.cola.length||s.i>=s.cola.length)return null;
+    if(s.cola.some(c=>!BANCO[c.bi]))return null;
+    return s;
+  }catch(e){return null}
+}
+function borrarProgreso(){try{localStorage.removeItem(KEY)}catch(e){}}
+function leerResultados(){try{return JSON.parse(localStorage.getItem(KEY_R)||"{}")}catch(e){return {}}}
+function guardarResultado(pct){
+  try{const r=leerResultados();r[modoActual]={pct,n:historial.length,fecha:Date.now()};
+      localStorage.setItem(KEY_R,JSON.stringify(r))}catch(e){}
+}
+function borrarTodo(){try{localStorage.removeItem(KEY);localStorage.removeItem(KEY_R)}catch(e){}}
+
+function prep(q,bi){
+  const o=Object.assign({},q);
+  o.bi = bi!==undefined ? bi : BANCO.indexOf(q);
+  if(q.o){const idx=barajar(q.o.map((_,n)=>n)); o.ord=idx; o.o=idx.map(n=>q.o[n]); o.c=idx.indexOf(q.c)}
+  return o;
+}
+function rehidratar(bi,ord){
+  const q=BANCO[bi], o=Object.assign({},q); o.bi=bi;
+  if(ord&&q.o){o.ord=ord; o.o=ord.map(n=>q.o[n]); o.c=ord.indexOf(q.c)}
+  return o;
+}
+function marcador(){
+  elOk.textContent="Aciertos "+buenas; elNo.textContent="Errores "+malas;
+  const activo=cola.length>0;
+  barra.style.display=activo?"block":"none";
+  if(activo){
+    elPr.style.width=((i/cola.length)*100)+"%";
+    elPn.textContent="Pregunta "+Math.min(i+1,cola.length)+" de "+cola.length;
+  }
+}
+elSalir.onclick=()=>{guardar();portada()};
+
+/* ---------- portada ---------- */
+function portada(){
+  cola=[];i=0;buenas=0;malas=0;pistas=0;historial=[];marcador();
+  const n=t=>BANCO.filter(q=>q.t===t).length;
+  const nv=k=>BANCO.filter(q=>q.niv===k).length;
+  const g=leerProgreso(), res=leerResultados();
+  const ult=m=>res[m]?`<span class="ult">último ${res[m].pct}%</span>`:"";
+
+  app.innerHTML=(g?`
+  <div class="retomar">
+    <b>Tienes un intento sin terminar</b>
+    <p>${esc(NOMBRE[g.modo]||"Quiz")} · pregunta ${g.i+1} de ${g.cola.length} · ${g.buenas} aciertos y ${g.malas} errores</p>
+    <div class="acc" style="margin-top:0">
+      <button class="btn btn-verde btn-sm" id="bCont">Continuar</button>
+      <button class="btn btn-sm" id="bDesc">Descartar</button>
+    </div>
+  </div>`:"")+`
+  <div class="titulo">
+    <h1>Quiz<br>Final</h1>
+    <p>Tratamiento de los trastornos temporomandibulares. Okeson, capítulos 11, 12 y 13.</p>
+  </div>
+  <dl class="ficha">
+    <div class="fila"><dt>Preguntas</dt><dd>${BANCO.length} en total</dd></div>
+    <div class="fila"><dt>Formatos</dt><dd>${n("vf")} de verdadero o falso, ${n("mc")} de selección múltiple, ${n("caso")} casos clínicos</dd></div>
+    <div class="fila"><dt>Niveles</dt><dd>${nv(1)} fáciles, ${nv(2)} medias, ${nv(3)} difíciles</dd></div>
+    <div class="fila"><dt>Pistas</dt><dd>Disponibles en todas las preguntas</dd></div>
+    <div class="fila"><dt>Progreso</dt><dd>Se guarda solo: puedes salir y continuar después</dd></div>
+  </dl>
+  <div class="centro"><button class="btn btn-ama" data-m="todo" style="font-size:19px;padding:15px 44px">Empezar</button></div>
+  <div class="sueltos">
+    <h2>O practica un bloque suelto</h2>
+    <div class="rejilla">
+      <button class="bloque" data-m="vf"><b>Verdadero o falso</b><span>${n("vf")} preguntas</span>${ult("vf")}</button>
+      <button class="bloque" data-m="mc"><b>Selección múltiple</b><span>${n("mc")} preguntas</span>${ult("mc")}</button>
+      <button class="bloque" data-m="caso"><b>Casos clínicos</b><span>${n("caso")} casos</span>${ult("caso")}</button>
+    </div>
+  </div>
+  ${Object.keys(res).length?`<div class="pie"><button class="btn btn-sm" id="bReset">Restablecer todo el progreso</button></div>`:""}`;
+
+  app.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>arrancar(b.dataset.m));
+  if(g){
+    document.getElementById("bCont").onclick=()=>continuar(g);
+    document.getElementById("bDesc").onclick=()=>{borrarProgreso();portada()};
+  }
+  const r=document.getElementById("bReset");
+  if(r)r.onclick=()=>{borrarTodo();portada()};
+  arriba();
+}
+
+function arrancar(m){
+  modoActual=m;
+  const base=BANCO.map((q,bi)=>[q,bi]).filter(x=>m==="todo"||x[0].t===m);
+  cola=base.map(x=>prep(x[0],x[1])); i=0;buenas=0;malas=0;pistas=0;historial=[];
+  guardar(); pintar();
+}
+function continuar(s){
+  modoActual=s.modo; i=s.i; buenas=s.buenas; malas=s.malas; pistas=s.pistas;
+  cola=s.cola.map(c=>rehidratar(c.bi,c.ord));
+  historial=s.hist.map(h=>({q:BANCO[h.bi],bi:h.bi,acierto:h.acierto}));
+  pintar();
+}
+
+/* ---------- pregunta ---------- */
+function pintar(){
+  if(i>=cola.length)return resultados();
+  sel=null;resuelto=false;pistaOn=false;
+  marcador();
+  const q=cola[i];
+  let c="";
+  if(q.ctx) c+=`<div class="ctx">${q.ctx.map(x=>`<b>${esc(x[0])}</b><p>${esc(x[1])}</p>`).join("")}</div>`;
+  c+=`<div class="preg${q.q.length>260?" largo":""}">${esc(limpio(q.q))}</div>`;
+  if(q.t==="vf"){
+    c+=`<div class="ops vf">
+      <button class="op" data-v="1">Verdadero</button>
+      <button class="op" data-v="0">Falso</button></div>`;
+  }else{
+    c+=`<div class="ops">${q.o.map((t,n)=>
+      `<button class="op" data-v="${n}"><span class="k">${"ABCD"[n]}</span><span>${esc(t)}</span></button>`).join("")}</div>`;
+  }
+
+  app.innerHTML=`<div class="card">
+    <div class="sup">
+      <span class="niv">${NIV[q.niv]}</span>
+      <span class="tipo">${TIPO[q.t]}</span>
+      <span class="cuenta">${i+1}/${cola.length}</span>
+      <span class="tema">${esc(q.tema)}</span>
+    </div>
+    ${c}
+    <div id="zp"></div><div id="zf"></div>
+    <div class="acc">
+      <button class="btn btn-sm" id="bPista">Pista</button>
+      <button class="btn btn-ama der" id="bOk" disabled>Comprobar</button>
+    </div></div>`;
+
+  document.getElementById("bPista").onclick=darPista;
+  document.getElementById("bOk").onclick=comprobar;
+  app.querySelectorAll(".op").forEach(b=>b.onclick=()=>{
+    if(resuelto)return;
+    app.querySelectorAll(".op").forEach(x=>x.classList.remove("sel"));
+    b.classList.add("sel"); sel=+b.dataset.v;
+    document.getElementById("bOk").disabled=false;
+  });
+  arriba();
+}
+
+function darPista(){
+  if(pistaOn||resuelto)return;
+  pistaOn=true;pistas++;guardar();
+  document.getElementById("zp").innerHTML=`<div class="pista"><b>Pista.</b> ${esc(cola[i].pista)}</div>`;
+  document.getElementById("bPista").disabled=true;
+}
+
+function comprobar(){
+  if(resuelto)return; resuelto=true;
+  const q=cola[i];
+  const correcta = q.t==="vf" ? (q.a?1:0) : q.c;
+  const acierto = sel===correcta;
+
+  app.querySelectorAll(".op").forEach(b=>{
+    b.disabled=true; const v=+b.dataset.v;
+    b.classList.remove("sel");
+    if(v===correcta) b.classList.add("bien");
+    else if(v===sel) b.classList.add("mal");
+    else b.classList.add("apag");
+  });
+
+  if(acierto)buenas++;else malas++;
+  historial.push({q,bi:q.bi,acierto});
+  marcador(); guardar();
+
+  const textoCorrecta = q.t==="vf" ? (q.a?"Verdadero":"Falso") : q.o[q.c];
+  document.getElementById("zf").innerHTML=`
+    <div class="fb ${acierto?"ok":"no"}">
+      <div class="t">${acierto?"Respuesta correcta.":"Respuesta incorrecta."}</div>
+      ${acierto?"":`<div class="sol">Respuesta correcta: ${esc(textoCorrecta)}</div>`}
+      <p>${esc(q.fb)}</p>
+      <span class="pag">${esc(q.pg)}</span>
+    </div>`;
+
+  const b=document.getElementById("bOk"), zf=document.getElementById("zf");
+  b.className="btn btn-verde btn-ancho";
+  b.textContent=(i===cola.length-1)?"Ver resultados":"Continuar";
+  b.onclick=()=>{i++;guardar();pintar()};
+  zf.parentNode.insertBefore(b,zf);          // el botón queda ancho, encima del feedback
+  const fila=app.querySelector(".acc"); if(fila)fila.style.display="none";
+  b.focus({preventScroll:true});
+}
+
+/* ---------- resultados ---------- */
+function resultados(){
+  const tot=historial.length, pct=tot?Math.round(buenas/tot*100):0;
+  borrarProgreso(); if(tot)guardarResultado(pct);
+  elPr.style.width="100%"; barra.style.display="none";
+
+  const ver = pct>=90?"Listo para el examen" : pct>=75?"Bien, con huecos concretos"
+            : pct>=50?"A medio camino" : "Necesitas otra vuelta al material";
+
+  const porTema={};
+  historial.forEach(h=>{const k=h.q.tema;porTema[k]=porTema[k]||{ok:0,n:0};porTema[k].n++;if(h.acierto)porTema[k].ok++});
+  const temas=Object.entries(porTema).sort((a,b)=>(a[1].ok/a[1].n)-(b[1].ok/b[1].n));
+
+  const filas=temas.map(([nm,d])=>{
+    const p=Math.round(d.ok/d.n*100);
+    const e=p>=80?["e1","Dominado"]:p>=50?["e2","Repasar"]:["e3","Flojo"];
+    const col=p>=80?"var(--ama)":p>=50?"var(--rosa)":"var(--magenta)";
+    return `<div class="tr"><div class="l1"><span class="nm">${esc(nm)}</span>
+      <span class="et ${e[0]}">${e[1]}</span><span class="sc">${d.ok}/${d.n}</span></div>
+      <div class="mini"><i style="width:${p}%;background:${col}"></i></div></div>`}).join("");
+
+  const fallos=historial.filter(h=>!h.acierto);
+  const lista=fallos.length? fallos.map(h=>{
+    const enun = h.q.ctx ? h.q.ctx[0][1].slice(0,90)+"… → "+h.q.q : limpio(h.q.q);
+    return `<div class="fallo"><b>${esc(h.q.tema)} · ${esc(h.q.pg)}</b>${esc(enun)}</div>`}).join("")
+    : `<div class="aviso">No fallaste ninguna. Repite el bloque en unos días para comprobar que se sostiene.</div>`;
+
+  const debiles=temas.filter(([,d])=>d.ok/d.n<0.8).map(([n])=>n);
+  const fuertes=temas.filter(([,d])=>d.ok/d.n>=0.8).map(([n])=>n);
+  const plan = debiles.length
+    ? `<div class="aviso"><b>Por dónde seguir:</b> ataca en este orden — ${debiles.slice(0,3).map(esc).join(", ")}.${
+        fuertes.length?` Ya tienes sólido: ${fuertes.map(esc).join(", ")}.`:""}</div>`
+    : `<div class="aviso"><b>Todos los temas en verde.</b> Repite los casos clínicos, que son los que más se olvidan.</div>`;
+
+  app.innerHTML=`<div class="res">
+    <h2>Resultados</h2>
+    <div class="marcador">
+      <div class="pct">${pct}%</div>
+      <div class="ver">${ver}</div>
+    </div>
+    <div class="tres">
+      <div class="kpi k1"><b>${buenas}</b><span>Aciertos</span></div>
+      <div class="kpi"><b>${malas}</b><span>Errores</span></div>
+      <div class="kpi"><b>${pistas}</b><span>Pistas</span></div>
+    </div>
+    <h3 class="rs">Rendimiento por tema</h3>${filas}
+    <h3 class="rs">Qué repasar (${fallos.length})</h3>${lista}
+    <h3 class="rs">Plan</h3>${plan}
+    <div class="acc">
+      ${fallos.length?`<button class="btn btn-verde btn-sm" id="bRe">Repetir las ${fallos.length} falladas</button>`:""}
+      <button class="btn btn-ama btn-sm" id="bMismo">Repetir el bloque</button>
+      <button class="btn btn-sm" id="bHome">Inicio</button>
+    </div></div>`;
+
+  if(fallos.length)document.getElementById("bRe").onclick=()=>{
+    cola=fallos.map(h=>prep(h.q,h.bi));i=0;buenas=0;malas=0;pistas=0;historial=[];guardar();pintar()};
+  document.getElementById("bMismo").onclick=()=>arrancar(modoActual);
+  document.getElementById("bHome").onclick=portada;
+  arriba();
+}
+
+/* ---------- teclado ---------- */
+document.addEventListener("keydown",e=>{
+  if(!cola.length)return;
+  const q=cola[i]; if(!q)return;
+  const bOk=document.getElementById("bOk");
+  if(e.key==="Enter"&&bOk&&!bOk.disabled){e.preventDefault();bOk.click();return}
+  if(resuelto)return;
+  if(q.t==="vf"){
+    if(e.key==="v"||e.key==="V"||e.key==="1"){const b=app.querySelector('.op[data-v="1"]');if(b)b.click()}
+    if(e.key==="f"||e.key==="F"||e.key==="2"){const b=app.querySelector('.op[data-v="0"]');if(b)b.click()}
+  }else if("1234".includes(e.key)){
+    const b=app.querySelector(`.op[data-v="${+e.key-1}"]`); if(b)b.click();
+  }
+});
+
+portada();
+</script>
+</body>
+</html>
